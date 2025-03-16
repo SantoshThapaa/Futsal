@@ -74,7 +74,6 @@ export const login = catchAsyncErrors(async (req, res, next) => {
         password,
         gender,
         nic,
-        role,
         profilePic
         } = req.body;
         if (
@@ -85,18 +84,62 @@ export const login = catchAsyncErrors(async (req, res, next) => {
             !password || 
             !nic ||
             !gender ||
-            !role ||
             !profilePic
             ) { 
             return next(new ErrorHandler("Please fill in all fields", 400));
     }
     const isRegistered = await User.findOne({ email });
     if (isRegistered){
-        return next(new ErrorHandler(`$(isRegistered.role) with This Email Alredy Exists!`));
+        return next(new ErrorHandler(`${isRegistered.role} with This Email Alredy Exists!`));
     }
-    const admin = await User.create({firstName, lastName, email, phone , password, gender, nic, role: "Admin", profilePic});
+    const admin = await User.create({firstName, lastName, email, phone , password, gender, nic, profilePic, role: "Admin"});
     res.status(200).json({
         success: true,
         message:"New Admin Registered", 
+        admin,
     })
+  });
+
+  export const getAllCourts = catchAsyncErrors(async(req, res, next)=>{
+    const courts = await User.find({role: "Court"});
+    res.status(200).json({
+        success: true,
+        courts,
+    });
+  });
+
+  export const getUserDetails = catchAsyncErrors(async (req, res, next) => {
+    const user = req.user;
+    res.status(200).json({
+      success: true,
+      user,
+    });
+  });
+
+  // Logout function for dashboard admin
+export const logoutAdmin = catchAsyncErrors(async (req, res, next) => {
+    res
+      .status(201)
+      .cookie("adminToken", "", {
+        httpOnly: true,
+        expires: new Date(Date.now()),
+      })
+      .json({
+        success: true,
+        message: "Admin Logged Out Successfully.",
+      });
+  });
+  
+  // Logout function for frontend user
+  export const logoutUser = catchAsyncErrors(async (req, res, next) => {
+    res
+      .status(201)
+      .cookie("userToken", "", {
+        httpOnly: true,
+        expires: new Date(Date.now()),
+      })
+      .json({
+        success: true,
+        message: "User Logged Out Successfully.",
+      });
   });
