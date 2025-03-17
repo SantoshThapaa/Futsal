@@ -92,12 +92,22 @@ export const login = catchAsyncErrors(async (req, res, next) => {
     if (isRegistered){
         return next(new ErrorHandler(`${isRegistered.role} with This Email Alredy Exists!`));
     }
-    const admin = await User.create({firstName, lastName, email, phone , password, gender, nic, profilePic, role: "Admin"});
+    const admin = await User.create({
+        firstName,
+        lastName,
+        email,
+        phone ,
+        password,
+        gender,
+        nic,
+        profilePic,
+        role: "Admin"
+    });
     res.status(200).json({
         success: true,
         message:"New Admin Registered", 
         admin,
-    })
+    });
   });
 
   export const getAllCourts = catchAsyncErrors(async(req, res, next)=>{
