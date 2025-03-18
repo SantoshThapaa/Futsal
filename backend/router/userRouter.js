@@ -3,7 +3,7 @@ import { addNewAdmin,  getUserDetails, login, logoutAdmin, logoutUser, Register 
 import { isAdminAuthenticated, isUserAuthenticated } from "../middlewares/auth.js";
 const router = express.Router();
 
-router.post("/client/register",Register);
+router.post("/register",Register);
 router.post("/login",login);
 router.post("/admin/addnew",isAdminAuthenticated, addNewAdmin);
 router.get("/admin/me", isAdminAuthenticated, getUserDetails);
