@@ -1,12 +1,12 @@
 import React from 'react'
 import "./App.css";
-import { BrowseRouter as Router, Routes, Route} from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route} from "react-router-dom";
 import Home from './pages/Home';
 import Booking from './pages/Booking';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import About from './pages/About';  
-import Footer from './pages/Footer';
+// import Footer from './pages/Footer';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 const App = () => {
