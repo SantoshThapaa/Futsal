@@ -383,11 +383,11 @@ footer .content div:last-child div svg {
   }
 }
 
-.departments {
+.location {
   padding-top: 30px;
   padding-bottom: 50px;
 }
-.departments h2 {
+.location h2 {
   color: gray;
   margin-bottom: 30px;
 }
@@ -413,7 +413,7 @@ footer .content div:last-child div svg {
   top: 0;
   left: 0;
 }
-.card .depart-name {
+.card .location-name {
   margin-bottom: 30px;
   background: #e5e5e5;
   width: 320px;
