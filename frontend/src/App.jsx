@@ -9,12 +9,14 @@ import About from './pages/About';
 // import Footer from './pages/Footer';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import Navbar from '../components/Navbar';
 const App = () => {
   // const { isAuthenticated, setIsAuthenticated, setUser } =
     // useContext(Context);
   return (
     <>
     <Router>
+      <Navbar/>
       <Routes>
         <Route path='/' element={<Home/>}/>
         <Route path='/booking' element={<Booking/>}/>
