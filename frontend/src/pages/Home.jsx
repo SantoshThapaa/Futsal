@@ -8,7 +8,7 @@ const Home = () => {
     return (
         <>
             <Hero title={"Welcome to FutZone Website | Your ultimate futsal booking hub!"} imageUrl={"/football.png"} />
-            <Biography />
+            <Biography imageUrl={"/about.png"} />
             <Location />
             <MessageForm />
         </>
