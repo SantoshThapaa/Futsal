@@ -2,6 +2,7 @@ import { catchAsyncErrors } from "../middlewares/catchAsyncErrors.js";
 import ErrorHandler from "../middlewares/errorMiddleware.js";
 import { User } from "../models/userSchema.js";
 import {generateToken} from "../utils/jwtToken.js";
+import cloudinary from "cloudinary";
 
 export const Register = catchAsyncErrors(async (req, res, next) => {
     const { 
@@ -12,33 +13,43 @@ export const Register = catchAsyncErrors(async (req, res, next) => {
         password, 
         gender,
         nic,
-        role,
-        profilePic
-        } = req.body;
-    if (
-        !firstName ||
-        !lastName ||
-        !email || 
-        !phone || 
-        !password || 
-        !nic ||
-        !gender ||
-        !role ||
-        !profilePic
-        ) { 
+        role
+    } = req.body;
+
+    if (!firstName || !lastName || !email || !phone || !password || !nic || !gender || !role) { 
         return next(new ErrorHandler("Please fill in all fields", 400));
     }
+
     let user = await User.findOne({ email });
     if(user){
         return next(new ErrorHandler("Email already exists", 400));
     }
-    const userRole = role || "User"; 
-    const userProfilePic = profilePic || "default.jpg"; 
+
+    let profilePicUrl = "default.jpg"; 
+
+    if (req.files && req.files.profilePic) {
+        const file = req.files.profilePic;
+
+        const allowedFormats = ["image/png", "image/jpeg", "image/webp"];
+        if (!allowedFormats.includes(file.mimetype)) {
+            return next(new ErrorHandler("Invalid file type. Please upload an image.", 400));
+        }
+
+        try {
+            const cloudinaryResponse = await cloudinary.uploader.upload(file.tempFilePath);
+            profilePicUrl = cloudinaryResponse.secure_url;
+        } catch (error) {
+            return next(new ErrorHandler("File upload failed. Try again.", 500));
+        }
+    }
+
     user = await User.create({
-        firstName, lastName, email, phone, password, gender, nic, role: userRole, profilePic: userProfilePic
+        firstName, lastName, email, phone, password, gender, nic, role, profilePic: profilePicUrl
     });
+
     generateToken(user, "User registered successfully", 200, res);
 });
+
 
 export const login = catchAsyncErrors(async (req, res, next) => {
     const { email, password, confirmPassword, role } = req.body;
