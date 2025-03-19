@@ -5,12 +5,11 @@ import { Context } from "../main";
 import { Link, useNavigate, Navigate } from "react-router-dom";
 
 const Login = () => {
-  const { isAuthenticated, setIsAuthenticated } = useContext(Context);
+  const { isAuthenticated, setIsAuthenticated, setUser } = useContext(Context);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-
   const navigateTo = useNavigate();
 
   const handleLogin = async (e) => {
@@ -27,6 +26,11 @@ const Login = () => {
         )
         .then((res) => {
           toast.success(res.data.message);
+          const token = res.data.token;
+      localStorage.setItem("token", token); // Store token in localStorage
+
+      // Optionally, set the user data in the context
+      setUser(res.data.user);
           setIsAuthenticated(true);
           navigateTo("/");
           setEmail("");
@@ -36,6 +40,9 @@ const Login = () => {
     } catch (error) {
       toast.error(error.response.data.message);
     }
+   
+
+
   };
 
   if (isAuthenticated) {
