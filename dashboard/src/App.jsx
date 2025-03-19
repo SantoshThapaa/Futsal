@@ -10,11 +10,11 @@ import Dashboard from "../components/Dashboard";
 import Login from "../components/Login";
 import Court from "../components/Court";
 import Message from "../components/Message";
-import Sidebar from "../components/Sidebar";
 import AddNewCourt from "../components/AddNewCourt";
+import Sidebar from "../components/Sidebar";
 
 const App = () => {
-  const { isAuthenticated, setIsAuthenticated,  setUser } =
+  const { isAuthenticated, setIsAuthenticated,  setAdmin } =
     useContext(Context);
 
   useEffect(() => {
@@ -27,10 +27,10 @@ const App = () => {
           }
         );
         setIsAuthenticated(true);
-        setUser(response.data.user);
+        setAdmin(response.data.user);
       } catch (error) {
         setIsAuthenticated(false);
-        setUser({});
+        setAdmin({});
       }
     };
     fetchUser();
