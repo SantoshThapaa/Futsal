@@ -1,34 +1,21 @@
-import React from "react";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
 
 const Location = () => {
-    const locationArray = [
-        {
-            name: "Kathmandu Futsal",
-            imageUrl: "https://tse3.mm.bing.net/th?id=OIP.dfsu2Y6j9mlrUpJMp4j4gAHaFj&pid=Api",
-        },
-        {
-            name: "Dhobighat Futsal",
-            imageUrl: "https://tse1.mm.bing.net/th?id=OIP.yAW1Fn-A85opztBuCoDqWAHaE8&pid=Api",
-        },
-        {
-            name: "Chabahil Futsal",
-            imageUrl: "https://tse1.mm.bing.net/th?id=OIP.Zzjof88hpzzt0iY7p9OHyAHaDY&pid=Api",
-        },
-        {
-            name: "Baneswor Futsal",
-            imageUrl: "https://tse2.mm.bing.net/th?id=OIP.0YdOJvnrQ_jbWq4O1CLcFgHaE8&pid=Api",
-        },
-        {
-            name: "Bhaktapur Futsal",
-            imageUrl: "https://tse1.mm.bing.net/th?id=OIP.Zzjof88hpzzt0iY7p9OHyAHaDY&pid=Api",
-        },
-        {
-            name: "Lalitpur Futsal",
-            imageUrl: "https://tse3.mm.bing.net/th?id=OIP.dfsu2Y6j9mlrUpJMp4j4gAHaFj&pid=Api",
-        }
-    ];
+    const [locations, setlocations] = useState([]);
+    useEffect(()=> {
+        const fetchCourts= async ()=>{
+            try {
+                const response = await axios.get("http://localhost:4000/api/courts/all")
+                setlocations(response.data.courts);
+            }catch(error){
+                console.error("Error fetching court data:", error);
+            }
+        };
+        fetchCourts();
+    }, []);
 
     const responsive = {
         extraLarge: {
@@ -61,16 +48,20 @@ const Location = () => {
                     responsive={responsive}
                     removeArrowOnDeviceType={["tablet", "mobile"]}
                 >
-                    {locationArray.map((location, index) => (
+                    {locations.length >0 ? (
+                        locations.map((location, index) => (
                         <div key={index} className="card">
                             <div
                                 className="location-name"
                             >
                                 {location.name}
                             </div>
-                            <img src={location.imageUrl} alt="location" />
+                            <img src={location.courtAvatar.url} alt="location" />
                         </div>
-                    ))}
+                    ))
+                ):(
+                    <div>No Courts available.</div>
+                )}
                 </Carousel>
             </div>
         </>
