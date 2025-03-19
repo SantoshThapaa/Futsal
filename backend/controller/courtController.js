@@ -155,68 +155,77 @@ export const updateCourt = catchAsyncErrors(async (req, res, next) => {
 
 
 export const bookCourt = catchAsyncErrors(async (req, res, next) => {
-    const { date, startTime, endTime, userId } = req.body;
-
-    // ✅ Ensure `courtId` is correctly extracted
-    const { courtId } = req.params; 
+    // Extract data from the request body
+    const { date, startTime, endTime } = req.body;
+  
+    // Ensure `courtId` is correctly extracted from request parameters
+    const { courtId } = req.params;
     if (!courtId) {
-        return next(new ErrorHandler("Court ID is missing in request!", 400));
+      return next(new ErrorHandler("Court ID is missing in request!", 400));
     }
-
-    // ✅ Find court by ID
+  
+    // Ensure `userId` is extracted from the authenticated user (req.user._id)
+    const userId = req.user._id;  // Assuming `req.user` is set via authentication middleware
+    if (!userId) {
+      return next(new ErrorHandler("User not authenticated!", 401));
+    }
+  
+    // ✅ Find the court by ID
     const court = await Court.findById(courtId);
     if (!court) {
-        return next(new ErrorHandler("Court not found!", 404));
+      return next(new ErrorHandler("Court not found!", 404));
     }
-
-    // ✅ Ensure User Exists
+  
+    // ✅ Ensure the user exists in the system
     const user = await User.findById(userId);
     if (!user) {
-        return next(new ErrorHandler("User not found!", 404));
+      return next(new ErrorHandler("User not found!", 404));
     }
-
-    // ✅ Ensure Date is Valid
+  
+    // ✅ Ensure the date is valid
     const bookingDate = new Date(date);
     if (isNaN(bookingDate.getTime())) {
-        return next(new ErrorHandler("Invalid booking date!", 400));
+      return next(new ErrorHandler("Invalid booking date!", 400));
     }
-
-    // ✅ Check if slot is already booked
+  
+    // ✅ Check if the slot is already booked
     const isUnavailable = court.blockedSlots.some((slot) => {
-        return slot.date.toISOString().split("T")[0] === date &&
-            ((startTime >= slot.startTime && startTime < slot.endTime) ||
-             (endTime > slot.startTime && endTime <= slot.endTime));
+      return (
+        slot.date.toISOString().split("T")[0] === date &&
+        ((startTime >= slot.startTime && startTime < slot.endTime) ||
+          (endTime > slot.startTime && endTime <= slot.endTime))
+      );
     });
-
+  
     if (isUnavailable) {
-        return next(new ErrorHandler("This time slot is unavailable!", 400));
+      return next(new ErrorHandler("This time slot is unavailable!", 400));
     }
-
-    // ✅ Add Booking
+  
+    // ✅ Add booking to the court's blocked slots
     court.blockedSlots.push({
-        date: bookingDate,
+      date: bookingDate,
+      startTime,
+      endTime,
+      reason: `Booked by user ${userId}`,
+    });
+  
+    await court.save();
+  
+    res.status(201).json({
+      success: true,
+      message: "Court booked successfully!",
+      booking: {
+        courtId: court._id,
+        userId: user._id,
+        userName: `${user.firstName} ${user.lastName}`,
+        date,
         startTime,
         endTime,
-        reason: `Booked by user ${userId}`,
+      },
     });
-
-    await court.save();
-
-    res.status(201).json({
-        success: true,
-        message: "Court booked successfully!",
-        booking: {
-            courtId: court._id,
-            userId: user._id,
-            userName: `${user.firstName} ${user.lastName}`,
-            date,
-            startTime,
-            endTime,
-        },
-    });
-});
-
-
+  });
+  
+  
 
 export const deleteCourt = catchAsyncErrors(async (req, res, next) => {
     const court = await Court.findById(req.params.id);
