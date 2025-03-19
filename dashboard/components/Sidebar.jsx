@@ -3,7 +3,7 @@ import { TiHome } from "react-icons/ti";
 import { RiLogoutBoxFill } from "react-icons/ri";
 import { AiFillMessage } from "react-icons/ai";
 import { GiHamburgerMenu } from "react-icons/gi";
-import { FaUserDoctor } from "react-icons/fa6";
+import { IoIosFootball } from "react-icons/io";
 import { MdAddModerator } from "react-icons/md";
 import { IoPersonAddSharp } from "react-icons/io5";
 import axios from "axios";
@@ -56,12 +56,12 @@ const Sidebar = () => {
   return (
     <>
       <nav
-        style={!isAuthenticated ? { display: "none" } : { display: "flex" }}
+        style={isAuthenticated ? { display: "none" } : { display: "flex" }}
         className={show ? "show sidebar" : "sidebar"}
       >
         <div className="links">
           <TiHome onClick={gotoHomePage} />
-          <FaUserDoctor onClick={gotoCourtPage} />
+          <IoIosFootball onClick={gotoCourtPage} />
           <MdAddModerator onClick={gotoAddNewAdmin} />
           <IoPersonAddSharp onClick={gotoAddNewCourt} />
           <AiFillMessage onClick={gotoMessagesPage} />
