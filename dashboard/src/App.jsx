@@ -9,12 +9,12 @@ import "./App.css";
 import Dashboard from "../components/Dashboard";
 import Login from "../components/Login";
 import Court from "../components/Court";
-import Message from "../components/Message";
 import AddNewCourt from "../components/AddNewCourt";
 import Sidebar from "../components/Sidebar";
+import Messages from "../components/Messages";
 
 const App = () => {
-  const { isAuthenticated, setIsAuthenticated,  setAdmin } =
+  const { isAuthenticated, setIsAuthenticated,  setUser } =
     useContext(Context);
 
   useEffect(() => {
@@ -27,10 +27,10 @@ const App = () => {
           }
         );
         setIsAuthenticated(true);
-        setAdmin(response.data.user);
+        setUser(response.data.user);
       } catch (error) {
         setIsAuthenticated(false);
-        setAdmin({});
+        setUser({});
       }
     };
     fetchUser();
@@ -44,7 +44,7 @@ const App = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/court/addnew" element={<AddNewCourt />} />
         <Route path="/admin/addnew" element={<AddNewAdmin />} />
-        <Route path="/messages" element={<Message />} />
+        <Route path="/messages" element={<Messages/>}/>
         <Route path="/court" element={<Court />} />
       </Routes>
       <ToastContainer position="top-center" />
