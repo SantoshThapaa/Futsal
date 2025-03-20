@@ -6,7 +6,7 @@ import Booking from './pages/Booking';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import About from './pages/About';  
-// import Footer from './pages/Footer';
+import Footer from "../components/Footer";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Navbar from '../components/Navbar';
@@ -24,6 +24,7 @@ const App = () => {
         <Route path='/register' element={<Register/>}/>
         <Route path='/login' element={<Login/>}/>
       </Routes>
+      <Footer/>
       <ToastContainer position="top-center"/>
     </Router>
     </>
