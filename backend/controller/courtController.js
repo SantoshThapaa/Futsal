@@ -277,3 +277,79 @@ export const blockCourtSlot = catchAsyncErrors(async (req, res, next) => {
         message: "Court slot blocked successfully",
     });
 });
+
+
+
+export const getAllBookings = catchAsyncErrors(async (req, res, next) => {
+    const { courtId } = req.params;
+  
+    if (!courtId) {
+      return next(new ErrorHandler("Court ID is required!", 400));
+    }
+  
+    // Find the court and populate blocked slots
+    const court = await Court.findById(courtId);
+    if (!court) {
+      return next(new ErrorHandler("Court not found!", 404));
+    }
+  
+    res.status(200).json({
+      success: true,
+      bookings: court.blockedSlots.map((slot, index) => ({
+        bookingId: index, // Using index as a temporary ID (consider using unique IDs in the database)
+        courtId: court._id,
+        date: slot.date,
+        startTime: slot.startTime,
+        endTime: slot.endTime,
+        reason: slot.reason,
+      })),
+    });
+  });
+
+  export const updateBookingStatus = catchAsyncErrors(async (req, res, next) => {
+    const { courtId, bookingId } = req.params;
+    const { reason } = req.body;
+  
+    const court = await Court.findById(courtId);
+    if (!court) {
+      return next(new ErrorHandler("Court not found!", 404));
+    }
+  
+    if (!court.blockedSlots[bookingId]) {
+      return next(new ErrorHandler("Booking not found!", 404));
+    }
+  
+    // Update booking details (modify reason or other attributes)
+    court.blockedSlots[bookingId].reason = reason || court.blockedSlots[bookingId].reason;
+  
+    await court.save();
+  
+    res.status(200).json({
+      success: true,
+      message: "Booking updated successfully!",
+    });
+  });
+  
+
+  export const deleteBooking = catchAsyncErrors(async (req, res, next) => {
+    const { courtId, bookingId } = req.params;
+  
+    const court = await Court.findById(courtId);
+    if (!court) {
+      return next(new ErrorHandler("Court not found!", 404));
+    }
+  
+    if (!court.blockedSlots[bookingId]) {
+      return next(new ErrorHandler("Booking not found!", 404));
+    }
+  
+    // Remove the booking from blockedSlots array
+    court.blockedSlots.splice(bookingId, 1);
+    await court.save();
+  
+    res.status(200).json({
+      success: true,
+      message: "Booking deleted successfully!",
+    });
+  });
+  
